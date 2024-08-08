@@ -1,5 +1,4 @@
 # Copyright © ivanlobanov. All rights reserved.
-
 nginx:
   host: 127.0.0.1
   port: 80
@@ -11,4 +10,8 @@ server:
 kafka:
   host: 127.0.0.1
   port: 6473
+
+mongodb:
+  host: 127.0.0.1
+  port: 27017
   

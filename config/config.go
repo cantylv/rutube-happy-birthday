@@ -2,7 +2,7 @@
 package config
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -17,27 +17,39 @@ func setDefaultParameters() {
 
 	// __nginx__ variables
 	viper.SetDefault("nginx.host", "127.0.0.1")
-	viper.SetDefault("nginx.port", "80")
+	viper.SetDefault("nginx.port", 80)
 
 	// __server__ variables
 	viper.SetDefault("server.host", "127.0.0.1")
-	viper.SetDefault("server.port", "8000")
+	viper.SetDefault("server.port", 8000)
 
 	// __kafka__ variables
 	viper.SetDefault("kafka.host", "127.0.0.1")
-	viper.SetDefault("kafka.port", "6473")
+	viper.SetDefault("kafka.port", 6473)
+
+	// __mongodb__ variables
+	viper.SetDefault("mongodb.host", "127.0.0.1")
+	viper.SetDefault("mongodb.port", 27017)
 }
 
 // getFlags()
 // Bind flags within current viper configuration.
 func getFlags() {
 	var configPath string
+	var host string
 
+	// common flags
 	pflag.StringVarP(&configPath, "config", "c", "./config/dev/config.yaml", "Defines the path to the configuration file.")
+	pflag.StringVarP(&host, "host", "h", "127.0.0.1", "Defines the ip-address of the host.")
 	pflag.Parse()
 
 	// binding flags
 	viper.BindPFlag("config", pflag.Lookup("config"))
+
+	viper.BindPFlag("nginx.host", pflag.Lookup("host"))
+	viper.BindPFlag("server.host", pflag.Lookup("host"))
+	viper.BindPFlag("kafka.host", pflag.Lookup("host"))
+	viper.BindPFlag("mongodb.host", pflag.Lookup("host"))
 }
 
 // Read()
@@ -48,14 +60,21 @@ func Read() {
 	getFlags()
 	viper.SetConfigFile(viper.GetString("config"))
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			logger.Panicf("Fatal error config file: %w", err)
+		if _, ok := err.(*os.PathError); !ok {
+			logger.Panicf("Fatal error config file: %v.", err)
 		}
 		logger.Warn("Warning: configuration file is not found. Programm will be executed within default configuration.")
 	}
+
 	config := viper.AllSettings()
-	fmt.Println("Current Viper Configuration:")
-	for key, value := range config {
-		fmt.Printf("%s: %v\n", key, value)
-	}
+	logger.Infof("Current Viper Configuration: %v", config)
 }
+
+// Notification
+// Viper uses the following precedence order. Each item takes precedence over the item below it:
+// 1) explicit call to Set
+// 2) flag
+// 3) env
+// 4) config
+// 5) key/value store
+// 6) default
