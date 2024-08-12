@@ -6,12 +6,9 @@ import (
 	"github.com/cantylv/service-happy-birthday/internal/app"
 )
 
-// i want to use
-// viper, mongoDB
-
 func main() {
-	// чтение конфигурации
+	// setup configuration
 	config.Read()
-	// запуск приложения
+	// run app
 	app.Run()
 }
