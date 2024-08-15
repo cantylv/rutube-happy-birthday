@@ -6,9 +6,6 @@ nginx:
 server:
   host: 127.0.0.1
   port: 8000
-  write_timeout: 5s
-  read_timeout: 5s
-  idle_timeout: 1m
 
 kafka:
   host: 127.0.0.1
@@ -23,15 +20,4 @@ mongodb:
 memcache:
   host: 127.0.0.1
   port: 11211
-
-redis:
-  host: 127.0.0.1
-  port: 6379
-  root: admin
-  root_password: 123
-  max_connection_retries: 3
-  min_retry_backoff: 10ms
-  max_retry_backoff: 300ms
-  dial_timeout: 5s
-
   

@@ -7,6 +7,8 @@ import (
 	valid "github.com/asaskevich/govalidator"
 )
 
+// InitValidator
+// Defines specific struct tags for validation.
 func InitValidator() {
 	valid.SetFieldsRequiredByDefault(true)
 	// Custom validation tags

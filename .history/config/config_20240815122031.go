@@ -18,8 +18,9 @@ func setDefaultParameters() {
 	viper.AutomaticEnv()
 	// common variables
 	viper.SetDefault("config", "./config/dev/config.yaml")
-	viper.SetDefault("host", "127.0.0.1")
 	viper.SetDefault("graceful-timeout", 10*time.Second)
+	viper.SetDefault("host", "127.0.0.1")
+	pflag.DurationVarP(&wait, "graceful-timeout", "g", time.Second*10, "The duration for which the server gracefully wait for existing connections to finish.")
 
 	// runtime variables
 	if viper.Get(myconstants.EnvCsrfSecret) == nil {

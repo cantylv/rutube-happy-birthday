@@ -4,12 +4,15 @@ go 1.22.5
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
+	github.com/mailru/easyjson v0.7.7
 	github.com/satori/uuid v1.2.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 	go.mongodb.org/mongo-driver v1.16.0
 	go.uber.org/zap v1.27.0
 )
+
+require github.com/josharian/intern v1.0.0 // indirect
 
 require (
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874 // direct

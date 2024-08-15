@@ -1,31 +1,31 @@
 # Copyright © ivanlobanov. All rights reserved.
 nginx:
-  host: domain.ru
+  host: domain.host
   port: 80
 
 server:
-  host: domain.ru
+  host: 127.0.0.1
   port: 8000
   write_timeout: 5s
   read_timeout: 5s
   idle_timeout: 1m
 
 kafka:
-  host: domain.ru
+  host: 127.0.0.1
   port: 6473
 
 mongodb:
-  host: domain.ru
+  host: 127.0.0.1
   port: 27017
   root: admin
   root_password: 123
 
 memcache:
-  host: domain.ru
+  host: 127.0.0.1
   port: 11211
 
 redis:
-  host: domain.ru
+  host: 127.0.0.1
   port: 6379
   root: admin
   root_password: 123

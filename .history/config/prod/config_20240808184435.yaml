@@ -1,0 +1,13 @@
+# Copyright © ivanlobanov. All rights reserved.
+nginx:
+  host: 127.0.0.1
+  port: 8000
+
+server:
+  host: 127.0.0.1
+  port: 8000
+
+kafka:
+  host: 127.0.0.1
+  port: 6473
+  

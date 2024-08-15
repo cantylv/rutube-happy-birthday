@@ -1,0 +1,21 @@
+{
+    "_id": "66b89cea43ad0d6f8cf3f54e",
+    "full_name": "Lobanov Ivan Igorevich",
+    "birthday": "03.08.2003",
+    "email": "physic2003@mail.ru",
+    "created_at": "11.08.2024T12:16:37Z",
+    "updated_at": "11.08.2024T12:18:42Z",
+    "img_url": "user/1.jpg",
+    "subs": [
+        {
+            "employee_id": "acb89cea43ad088f8cf3f54e",
+            "interval": 3,
+            "is_followed": true
+        },
+        {
+            "employee_id": "89289cea43ad088f8cf37777",
+            "interval": 7,
+            "is_followed": false
+        }
+    ]
+}

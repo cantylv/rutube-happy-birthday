@@ -36,6 +36,9 @@ func Init() *mongo.Client {
 		}
 	}
 
+	// creating collections
+	createMongoCollection("user")
+	createMongoCollection("subs")
 	logger.Info("Succesful connection to MongoDB.")
 	return client
 }

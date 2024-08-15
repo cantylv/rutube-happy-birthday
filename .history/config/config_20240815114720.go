@@ -5,8 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/cantylv/service-happy-birthday/internal/utils/myconstants"
-	"github.com/satori/uuid"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -15,19 +13,9 @@ import (
 // setDefaultParameters
 // Default configuration is develop.
 func setDefaultParameters() {
-	viper.AutomaticEnv()
 	// common variables
 	viper.SetDefault("config", "./config/dev/config.yaml")
-	viper.SetDefault("host", "127.0.0.1")
 	viper.SetDefault("graceful-timeout", 10*time.Second)
-
-	// runtime variables
-	if viper.Get(myconstants.EnvCsrfSecret) == nil {
-		os.Setenv(myconstants.EnvCsrfSecret, uuid.NewV4().String())
-	}
-	if viper.Get(myconstants.EnvJwtSecret) == nil {
-		os.Setenv(myconstants.EnvJwtSecret, uuid.NewV4().String())
-	}
 
 	// __nginx__ variables
 	viper.SetDefault("nginx.host", "127.0.0.1")
@@ -36,9 +24,6 @@ func setDefaultParameters() {
 	// __server__ variables
 	viper.SetDefault("server.host", "127.0.0.1")
 	viper.SetDefault("server.port", 8000)
-	viper.SetDefault("server.write_timeout", time.Second*5)
-	viper.SetDefault("server.read_timeout", time.Second*5)
-	viper.SetDefault("server.idle_timeout", time.Second*60)
 
 	// __kafka__ variables
 	viper.SetDefault("kafka.host", "127.0.0.1")
@@ -51,10 +36,6 @@ func setDefaultParameters() {
 	// __memcache__ variables
 	viper.SetDefault("memcache.host", "127.0.0.1")
 	viper.SetDefault("memcache.port", 11211)
-
-	// __redis__ variables
-	viper.SetDefault("redis.host", "127.0.0.1")
-	viper.SetDefault("redis.port", 6379)
 }
 
 // getFlags
@@ -79,7 +60,6 @@ func getFlags() {
 	viper.BindPFlag("kafka.host", pflag.Lookup("host"))
 	viper.BindPFlag("mongodb.host", pflag.Lookup("host"))
 	viper.BindPFlag("memcache.host", pflag.Lookup("host"))
-	viper.BindPFlag("redis.host", pflag.Lookup("host"))
 }
 
 // Read

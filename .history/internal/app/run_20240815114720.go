@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/cantylv/service-happy-birthday/internal/functions"
 	"github.com/cantylv/service-happy-birthday/internal/route"
-	"github.com/cantylv/service-happy-birthday/internal/utils/functions"
 	"github.com/cantylv/service-happy-birthday/services"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -21,37 +21,38 @@ import (
 // The heart of our application. Initialization of different services and server instance.
 func Run() {
 	logger := zap.Must(zap.NewProduction()).Sugar()
-	// Tag definition for DTO.
+	// Tag definition for DTO
 	functions.InitValidator()
 	// Initialization of DBMS, brokers, in-memory storage and etc..
 	serviceCluster := services.Init()
 	defer func() {
-		// Shutting down all services.
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		if err := serviceCluster.MongoClient.Disconnect(ctx); err != nil {
-			logger.Errorf("Fatal error config file: %w.", err)
+			logger.Panicf("Fatal error config file: %w.", err)
 		}
 		err := serviceCluster.CacheClient.Close()
 		if err != nil {
 			logger.Errorf("Error close memcache connections: %w.", err)
 		}
 	}()
+	// Run server instance
+	r := mux.NewRouter()
+	route.Initialize(
+		route.RouterProps{
+			R: r,
+			S: serviceCluster,
+		},
+	)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", viper.GetString("server.host"), viper.GetUint16("server.port")),
-		WriteTimeout: viper.GetDuration("server.write_timeout"),
-		ReadTimeout:  viper.GetDuration("server.read_timeout"),
-		IdleTimeout:  viper.GetDuration("server.idle_timeout"),
-		Handler: route.Initialize(
-			route.RouterProps{
-				R: mux.NewRouter(),
-				S: serviceCluster,
-			},
-		),
+		WriteTimeout: time.Second * 5,
+		ReadTimeout:  time.Second * 5,
+		IdleTimeout:  time.Second * 60,
+		Handler:      r,
 	}
 
-	// Run server instance.
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			logger.Fatalf("The server has terminated its work: %w", err)

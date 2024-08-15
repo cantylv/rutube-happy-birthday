@@ -12,6 +12,10 @@ import (
 	"go.uber.org/zap"
 )
 
+func createMongoCollection(name string) {
+	options := options.CreateCollection().
+}
+
 func Init() *mongo.Client {
 	logger := zap.Must(zap.NewProduction()).Sugar()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -36,6 +40,9 @@ func Init() *mongo.Client {
 		}
 	}
 
+	// creating collections
+	createMongoCollection("user")
+	createMongoCollection("subs")
 	logger.Info("Succesful connection to MongoDB.")
 	return client
 }

@@ -21,11 +21,11 @@ mongodb:
   root_password: 123
 
 memcache:
-  host: domain.ru
+  host: 127.0.0.1
   port: 11211
 
 redis:
-  host: domain.ru
+  host: 127.0.0.1
   port: 6379
   root: admin
   root_password: 123
