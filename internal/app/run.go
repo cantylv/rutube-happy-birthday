@@ -30,7 +30,7 @@ func Run() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		if err := serviceCluster.MongoClient.Disconnect(ctx); err != nil {
-			logger.Errorf("Fatal error config file: %w.", err)
+			logger.Errorf("Error config file: %w.", err)
 		}
 		err := serviceCluster.CacheClient.Close()
 		if err != nil {

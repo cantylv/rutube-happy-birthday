@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cantylv/service-happy-birthday/internal/entity"
 	"github.com/cantylv/service-happy-birthday/internal/utils/functions"
 	"github.com/cantylv/service-happy-birthday/internal/utils/myconstants"
 	"github.com/cantylv/service-happy-birthday/internal/utils/myerrors"
@@ -30,14 +31,6 @@ import (
 // 	"id": "66b89cea43ad0d6f8cf3f54e",
 // }
 
-type jwtTokenHeader struct {
-	Exp string `json:"exp" valid:"-"`
-}
-
-type jwtTokenPayload struct {
-	Id string `json:"id" valid:"-"`
-}
-
 // JwtVerification
 // Needed for authentication.
 func JwtVerification(h http.Handler) http.Handler {
@@ -45,7 +38,17 @@ func JwtVerification(h http.Handler) http.Handler {
 		logger := zap.Must(zap.NewProduction()).Sugar()
 		requestID := functions.GetCtxRequestId(r)
 
-		jwtToken := functions.GetJWtToken(r)
+		jwtToken, err := functions.GetJWtToken(r)
+		if err != nil {
+			logger.Error(fmt.Sprintf("Error while jwt getting: %v", err),
+				zap.String(myconstants.RequestId, requestID))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.Internal,
+				CodeStatus: http.StatusInternalServerError,
+			})
+			return
+		}
 		if jwtToken != "" {
 			isValid, uId, err := jwtTokenIsValid(jwtToken)
 			if err != nil {
@@ -59,7 +62,7 @@ func JwtVerification(h http.Handler) http.Handler {
 				return
 			}
 			if !isValid {
-				logger.Error(fmt.Sprintf("Invalid jwt-token: %v", err),
+				logger.Info(fmt.Sprintf("Invalid jwt-token: %v", err),
 					zap.String(myconstants.RequestId, requestID))
 				functions.ErrorResponse(functions.ErrorResponseProps{
 					W:          w,
@@ -101,7 +104,7 @@ func jwtTokenIsValid(token string) (bool, string, error) {
 	if err != nil {
 		return false, "", err
 	}
-	var h jwtTokenHeader
+	var h entity.JwtTokenHeader
 	err = json.Unmarshal(dataHeader, &h)
 	if err != nil {
 		return false, "", err
@@ -111,7 +114,7 @@ func jwtTokenIsValid(token string) (bool, string, error) {
 	if err != nil {
 		return false, "", err
 	}
-	var p jwtTokenPayload
+	var p entity.JwtTokenPayload
 	err = json.Unmarshal(dataPayload, &p)
 	if err != nil {
 		return false, "", err

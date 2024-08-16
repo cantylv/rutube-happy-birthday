@@ -7,3 +7,11 @@ type ErrorDetail struct {
 type ResponseDetail struct {
 	Detail string `json:"detail" valid:"-"`
 }
+
+type JwtTokenHeader struct {
+	Exp string `json:"exp" valid:"-"`
+}
+
+type JwtTokenPayload struct {
+	Id string `json:"id" valid:"-"`
+}

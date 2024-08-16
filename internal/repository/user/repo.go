@@ -11,10 +11,10 @@ import (
 )
 
 type Repo interface {
-	Create(ctx context.Context, data *entity.User) error
-	Update(ctx context.Context, data *entity.User) error
-	GetByEmail(ctx context.Context, email string) (entity.User, error)
-	GetById(ctx context.Context, id uint32) (entity.User, error)
+	Create(ctx context.Context, data *entity.User) (string, error)
+	Update(ctx context.Context, data *entity.User) (string, error)
+	GetByEmail(ctx context.Context, email string) (*entity.User, error)
+	GetById(ctx context.Context, id uint32) (*entity.User, error)
 }
 
 type RepoLayer struct {
@@ -31,26 +31,32 @@ func NewRepoLayer(collection *mongo.Collection) RepoLayer {
 
 // Create
 // Creates new user in database.
-func (r *RepoLayer) Create(ctx context.Context, data *entity.User) error {
-	_, err := r.cl.InsertOne(ctx, data)
+func (r *RepoLayer) Create(ctx context.Context, data *entity.User) (string, error) {
+	res, err := r.cl.InsertOne(ctx, data)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	if res.InsertedID == nil {
+		return "", myerrors.ErrInvalidObjectId
+	}
+	return res.InsertedID.(string), nil
 }
 
 // Update
 // Updates data about existing user in database.
-func (r *RepoLayer) Update(ctx context.Context, data *entity.User) error {
+func (r *RepoLayer) Update(ctx context.Context, data *entity.User) (string, error) {
 	filter := bson.M{"id": data.Id}
 	res, err := r.cl.ReplaceOne(ctx, filter, data)
 	if err != nil {
-		return err
+		return "", err
 	}
-	if res.ModifiedCount == 0 || res.MatchedCount == 0 {
-		return errors.New(myerrors.UpdateFailed)
+	if res.MatchedCount == 0 {
+		return "", myerrors.ErrUserNotExist
 	}
-	return nil
+	if res.UpsertedID == nil {
+		return "", myerrors.ErrUpdateFailed
+	}
+	return res.UpsertedID.(string), nil
 }
 
 // GetByEmail
@@ -60,7 +66,7 @@ func (r *RepoLayer) GetByEmail(ctx context.Context, email string) (*entity.User,
 	err := r.cl.FindOne(ctx, bson.M{"email": email}).Decode(&u)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			return nil, myerrors.ErrUserNotExist
 		}
 		return nil, err
 	}
@@ -74,7 +80,7 @@ func (r *RepoLayer) GetById(ctx context.Context, id uint32) (*entity.User, error
 	err := r.cl.FindOne(ctx, bson.M{"id": id}).Decode(&u)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			return nil, myerrors.ErrUserNotExist
 		}
 		return nil, err
 	}

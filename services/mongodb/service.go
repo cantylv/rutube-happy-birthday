@@ -26,12 +26,15 @@ func Init() *mongo.Client {
 	if err != nil {
 		logger.Panicf("Fatal error MongoDB connect: %w.", err)
 	}
-	i := 0
-	for client.Ping(ctx, nil) != nil {
-		logger.Errorf("Error MongoDB ping: %w.", err)
+	for i := 0; i < 3; i++ {
+		err = client.Ping(ctx, nil)
+		if err == nil {
+			break
+		}
+		logger.Info("MongoDB ping n%d %w.", i, err)
 		time.Sleep(2 * time.Second)
 		i++
-		if i == 3 {
+		if i == 2 {
 			logger.Panicf("Fatal error MongoDB ping: %w.", err)
 		}
 	}

@@ -79,7 +79,6 @@ func getFlags() {
 	viper.BindPFlag("kafka.host", pflag.Lookup("host"))
 	viper.BindPFlag("mongodb.host", pflag.Lookup("host"))
 	viper.BindPFlag("memcache.host", pflag.Lookup("host"))
-	viper.BindPFlag("redis.host", pflag.Lookup("host"))
 }
 
 // Read

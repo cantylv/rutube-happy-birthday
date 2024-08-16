@@ -2,7 +2,6 @@ package functions
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/cantylv/service-happy-birthday/internal/utils/myconstants"
 )
@@ -18,14 +17,11 @@ func GetCtxRequestId(r *http.Request) string {
 	return ctxRequestId.(string)
 }
 
-// HTTP Headers
-
-// Authorization
-func GetJWtToken(r *http.Request) string {
-	authorizationHeader := r.Header.Get("Authorization")
-	// Header must start from "Bearer "
-	if !strings.HasPrefix(authorizationHeader, "Bearer ") {
-		return ""
+// HTTP Headers "Cookie"
+func GetJWtToken(r *http.Request) (string, error) {
+	jwtCookie, err := r.Cookie(myconstants.JwtCookie)
+	if err != nil {
+		return "", err
 	}
-	return strings.TrimPrefix(authorizationHeader, "Bearer ")
+	return jwtCookie.Name, nil
 }

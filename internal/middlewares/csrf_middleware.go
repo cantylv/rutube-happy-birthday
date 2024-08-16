@@ -6,6 +6,7 @@ import (
 
 	"github.com/cantylv/service-happy-birthday/internal/utils/functions"
 	"github.com/cantylv/service-happy-birthday/internal/utils/myconstants"
+	"github.com/cantylv/service-happy-birthday/internal/utils/myerrors"
 	"go.uber.org/zap"
 )
 
@@ -21,8 +22,19 @@ type tokens struct {
 func Csrf(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger := zap.Must(zap.NewProduction()).Sugar()
+
 		requestId := functions.GetCtxRequestId(r)
-		jwtToken := functions.GetJWtToken(r)
+		jwtToken, err := functions.GetJWtToken(r)
+		if err != nil {
+			logger.Error(fmt.Sprintf("Error while jwt getting: %v", err),
+				zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.Internal,
+				CodeStatus: http.StatusInternalServerError,
+			})
+			return
+		}
 
 		isMutatingMethod := false
 		for _, method := range []string{"PUT", "POST"} {
@@ -33,7 +45,7 @@ func Csrf(h http.Handler) http.Handler {
 		if isMutatingMethod && jwtToken != "" {
 			csrfToken := r.Header.Get(myconstants.CsrfHeader)
 			if csrfToken == "" {
-				logger.Error("No X-CSRF-Token in headers of the HTTP request. User was redirected to the authorization form.",
+				logger.Info("No X-CSRF-Token in headers of the HTTP request. User was redirected to the authorization form.",
 					zap.String(myconstants.RequestId, requestId))
 				functions.ErrorResponse(functions.ErrorResponseProps{
 					W:          w,
@@ -61,7 +73,7 @@ func Csrf(h http.Handler) http.Handler {
 				return
 			}
 			if !isValid {
-				logger.Error("Invalid CSRF-Token. User was redirected to the authorization form.",
+				logger.Info("Invalid CSRF-Token. User was redirected to the authorization form.",
 					zap.String(myconstants.RequestId, requestId),
 				)
 				functions.ErrorResponse(functions.ErrorResponseProps{

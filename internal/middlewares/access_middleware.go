@@ -49,7 +49,7 @@ func Access(h http.Handler) http.Handler {
 
 		rec, ok := w.(*recorder.ResponseWriter)
 		if !ok {
-			logger.Error("Can't convert http.ResponseWriter type to recorder.ResponseWriter.")
+			logger.Info("Can't convert http.ResponseWriter type to recorder.ResponseWriter.")
 		}
 
 		timeNow := time.Now()
