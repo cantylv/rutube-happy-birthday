@@ -17,7 +17,80 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(in *jlexer.Lexer, out *User) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(in *jlexer.Lexer, out *UserUpdate) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "full_name":
+			out.FullName = string(in.String())
+		case "birthday":
+			out.Birthday = string(in.String())
+		case "email":
+			out.Email = string(in.String())
+		case "password":
+			out.Password = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity(out *jwriter.Writer, in UserUpdate) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"full_name\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.FullName))
+	}
+	{
+		const prefix string = ",\"birthday\":"
+		out.RawString(prefix)
+		out.String(string(in.Birthday))
+	}
+	{
+		const prefix string = ",\"email\":"
+		out.RawString(prefix)
+		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"password\":"
+		out.RawString(prefix)
+		out.String(string(in.Password))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v UserUpdate) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *UserUpdate) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(l, v)
+}
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity1(in *jlexer.Lexer, out *User) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -46,8 +119,6 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(in
 			out.Email = string(in.String())
 		case "password":
 			out.Password = string(in.String())
-		case "img_url":
-			out.ImgUrl = string(in.String())
 		case "subs":
 			if in.IsNull() {
 				in.Skip()
@@ -56,7 +127,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(in
 				in.Delim('[')
 				if out.Subs == nil {
 					if !in.IsDelim(']') {
-						out.Subs = make([]Subscription, 0, 8)
+						out.Subs = make([]Subscription, 0, 2)
 					} else {
 						out.Subs = []Subscription{}
 					}
@@ -81,7 +152,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(in
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity(out *jwriter.Writer, in User) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity1(out *jwriter.Writer, in User) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -111,11 +182,6 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity(ou
 		out.String(string(in.Password))
 	}
 	{
-		const prefix string = ",\"img_url\":"
-		out.RawString(prefix)
-		out.String(string(in.ImgUrl))
-	}
-	{
 		const prefix string = ",\"subs\":"
 		out.RawString(prefix)
 		if in.Subs == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
@@ -136,14 +202,14 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity(ou
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v User) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity1(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *User) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity1(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity1(in *jlexer.Lexer, out *Subscription) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity2(in *jlexer.Lexer, out *Subscription) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -163,7 +229,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity1(i
 		}
 		switch key {
 		case "employee_id":
-			out.EmployeeId = uint32(in.Uint32())
+			out.EmployeeId = string(in.String())
 		case "interval":
 			out.Interval = uint16(in.Uint16())
 		case "is_followed":
@@ -178,14 +244,14 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity1(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity1(out *jwriter.Writer, in Subscription) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity2(out *jwriter.Writer, in Subscription) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
 		const prefix string = ",\"employee_id\":"
 		out.RawString(prefix[1:])
-		out.Uint32(uint32(in.EmployeeId))
+		out.String(string(in.EmployeeId))
 	}
 	{
 		const prefix string = ",\"interval\":"
@@ -202,14 +268,73 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity1(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Subscription) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity1(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity2(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Subscription) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity1(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity2(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity2(in *jlexer.Lexer, out *SignUpForm) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity3(in *jlexer.Lexer, out *SubProps) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "IdFollower":
+			out.IdFollower = string(in.String())
+		case "IdEmployee":
+			out.IdEmployee = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity3(out *jwriter.Writer, in SubProps) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"IdFollower\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.IdFollower))
+	}
+	{
+		const prefix string = ",\"IdEmployee\":"
+		out.RawString(prefix)
+		out.String(string(in.IdEmployee))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v SubProps) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity3(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *SubProps) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity3(l, v)
+}
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity4(in *jlexer.Lexer, out *SignUpForm) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -246,7 +371,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity2(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity2(out *jwriter.Writer, in SignUpForm) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity4(out *jwriter.Writer, in SignUpForm) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -275,14 +400,14 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity2(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v SignUpForm) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity2(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity4(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *SignUpForm) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity2(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity4(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity3(in *jlexer.Lexer, out *SignInForm) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity5(in *jlexer.Lexer, out *SignInForm) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -315,7 +440,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity3(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity3(out *jwriter.Writer, in SignInForm) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity5(out *jwriter.Writer, in SignInForm) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -334,14 +459,73 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity3(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v SignInForm) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity3(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity5(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *SignInForm) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity3(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity5(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity4(in *jlexer.Lexer, out *ResponseDetail) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity6(in *jlexer.Lexer, out *SetUpIntervalProps) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "Ids":
+			(out.Ids).UnmarshalEasyJSON(in)
+		case "NewInterval":
+			out.NewInterval = uint16(in.Uint16())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity6(out *jwriter.Writer, in SetUpIntervalProps) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"Ids\":"
+		out.RawString(prefix[1:])
+		(in.Ids).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"NewInterval\":"
+		out.RawString(prefix)
+		out.Uint16(uint16(in.NewInterval))
+	}
+	out.RawByte('}')
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v SetUpIntervalProps) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity6(w, v)
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *SetUpIntervalProps) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity6(l, v)
+}
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity7(in *jlexer.Lexer, out *ResponseDetail) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -372,7 +556,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity4(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity4(out *jwriter.Writer, in ResponseDetail) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity7(out *jwriter.Writer, in ResponseDetail) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -386,14 +570,14 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity4(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ResponseDetail) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity4(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity7(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ResponseDetail) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity4(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity7(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity5(in *jlexer.Lexer, out *JwtTokenPayload) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity8(in *jlexer.Lexer, out *JwtTokenPayload) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -424,7 +608,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity5(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity5(out *jwriter.Writer, in JwtTokenPayload) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity8(out *jwriter.Writer, in JwtTokenPayload) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -438,14 +622,14 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity5(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v JwtTokenPayload) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity5(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity8(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *JwtTokenPayload) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity5(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity8(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity6(in *jlexer.Lexer, out *JwtTokenHeader) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity9(in *jlexer.Lexer, out *JwtTokenHeader) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -476,7 +660,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity6(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity6(out *jwriter.Writer, in JwtTokenHeader) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity9(out *jwriter.Writer, in JwtTokenHeader) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -490,14 +674,14 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity6(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v JwtTokenHeader) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity6(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity9(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *JwtTokenHeader) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity6(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity9(l, v)
 }
-func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity7(in *jlexer.Lexer, out *ErrorDetail) {
+func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity10(in *jlexer.Lexer, out *ErrorDetail) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -528,7 +712,7 @@ func easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity7(i
 		in.Consumed()
 	}
 }
-func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity7(out *jwriter.Writer, in ErrorDetail) {
+func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity10(out *jwriter.Writer, in ErrorDetail) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -542,10 +726,10 @@ func easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity7(o
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ErrorDetail) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity7(w, v)
+	easyjson163c17a9EncodeGithubComCantylvServiceHappyBirthdayInternalEntity10(w, v)
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ErrorDetail) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity7(l, v)
+	easyjson163c17a9DecodeGithubComCantylvServiceHappyBirthdayInternalEntity10(l, v)
 }

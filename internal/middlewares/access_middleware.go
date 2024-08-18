@@ -20,7 +20,7 @@ type AccessLogStart struct {
 	Method         string
 	StartTimeHuman string
 	RequestId      string
-	Logger         *zap.SugaredLogger
+	Logger         *zap.Logger
 }
 
 type AccessLogEnd struct {
@@ -29,7 +29,7 @@ type AccessLogEnd struct {
 	ResponseStatus int
 	EndTimeHuman   string
 	RequestId      string
-	Logger         *zap.SugaredLogger
+	Logger         *zap.Logger
 }
 
 // formatTime
@@ -42,15 +42,12 @@ func formatTime(t time.Time) string {
 // Middleware that logs the start and end of request handling.
 func Access(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger := zap.Must(zap.NewProduction()).Sugar()
+		logger := zap.Must(zap.NewProduction())
 		requestId := uuid.NewV4().String()
 		ctx := context.WithValue(context.Background(), myconstants.RequestId, requestId)
 		r = r.WithContext(ctx)
 
-		rec, ok := w.(*recorder.ResponseWriter)
-		if !ok {
-			logger.Info("Can't convert http.ResponseWriter type to recorder.ResponseWriter.")
-		}
+		rec := recorder.NewResponseWriter(w)
 
 		timeNow := time.Now()
 		// nginx will proxy headers, like "User-Agent", "X-Real-IP", "Content-Length"
@@ -84,25 +81,23 @@ func Access(h http.Handler) http.Handler {
 // LogInitRequest
 // Logs user-agent, real-ip and etc..
 func LogInitRequest(data AccessLogStart) {
-	data.Logger.Info(
-		zap.String("User-Agent", data.UserAgent),
-		zap.String("Real-IP", data.RealIp),
-		zap.String("Content-Length", data.ContentLength),
-		zap.String("URI", data.URI),
-		zap.String("Method", data.Method),
-		zap.String("Start-Time-Human", data.StartTimeHuman),
-		zap.String("Request-ID", data.RequestId),
+	data.Logger.Info("request-id "+data.RequestId,
+		zap.String("user-agent", data.UserAgent),
+		zap.String("real-ip", data.RealIp),
+		zap.String("content-length", data.ContentLength),
+		zap.String("uri", data.URI),
+		zap.String("method", data.Method),
+		zap.String("start-time-human", data.StartTimeHuman),
 	)
 }
 
 // LogEndRequest
 // Logs latency in ms, response size and etc..
 func LogEndRequest(data AccessLogEnd) {
-	data.Logger.Info(
+	data.Logger.Info("request-id "+data.RequestId,
 		zap.Int64("Latensy-MS", data.LatencyMs),
 		zap.String("Response-Size", data.ResponseSize),
 		zap.Int("Response-Status", data.ResponseStatus),
 		zap.String("End-Time-Human", data.EndTimeHuman),
-		zap.String("Request-ID", data.RequestId),
 	)
 }

@@ -30,11 +30,11 @@ func Run() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		if err := serviceCluster.MongoClient.Disconnect(ctx); err != nil {
-			logger.Errorf("Error config file: %w.", err)
+			logger.Errorf("error config file: %v", err)
 		}
 		err := serviceCluster.CacheClient.Close()
 		if err != nil {
-			logger.Errorf("Error close memcache connections: %w.", err)
+			logger.Errorf("error close memcache connections: %v", err)
 		}
 	}()
 
@@ -54,7 +54,7 @@ func Run() {
 	// Run server instance.
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			logger.Fatalf("The server has terminated its work: %w", err)
+			logger.Fatalf("the server has terminated its work: %v", err)
 		}
 	}()
 
@@ -69,6 +69,6 @@ func Run() {
 	defer cancel()
 
 	srv.Shutdown(ctx)
-	logger.Info("The server has terminated its work.")
+	logger.Info("the server has terminated its work")
 	os.Exit(0)
 }

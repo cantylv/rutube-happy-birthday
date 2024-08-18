@@ -23,5 +23,5 @@ func GetJWtToken(r *http.Request) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return jwtCookie.Name, nil
+	return jwtCookie.Value, nil
 }

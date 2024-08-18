@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -21,16 +23,16 @@ type tokens struct {
 // For hashing we use Hash-based Message Authentication (HMACSHA256).
 func Csrf(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger := zap.Must(zap.NewProduction()).Sugar()
+		logger := zap.Must(zap.NewProduction())
 
 		requestId := functions.GetCtxRequestId(r)
 		jwtToken, err := functions.GetJWtToken(r)
-		if err != nil {
-			logger.Error(fmt.Sprintf("Error while jwt getting: %v", err),
+		if err != nil && !errors.Is(err, http.ErrNoCookie) {
+			logger.Error(fmt.Sprintf("error while jwt getting: %v", err),
 				zap.String(myconstants.RequestId, requestId))
 			functions.ErrorResponse(functions.ErrorResponseProps{
 				W:          w,
-				Msg:        myerrors.Internal,
+				Msg:        myerrors.ErrInternal.Error(),
 				CodeStatus: http.StatusInternalServerError,
 			})
 			return
@@ -45,14 +47,14 @@ func Csrf(h http.Handler) http.Handler {
 		if isMutatingMethod && jwtToken != "" {
 			csrfToken := r.Header.Get(myconstants.CsrfHeader)
 			if csrfToken == "" {
-				logger.Info("No X-CSRF-Token in headers of the HTTP request. User was redirected to the authorization form.",
+				logger.Info("no X-CSRF-Token in headers of the HTTP request, user was redirected to the authorization form",
 					zap.String(myconstants.RequestId, requestId))
+				w.Header().Add("Location", "/api/v1/signin")
 				functions.ErrorResponse(functions.ErrorResponseProps{
 					W:          w,
-					Msg:        "You were redirected to the authorization form.",
+					Msg:        "you were redirected to the authorization form",
 					CodeStatus: http.StatusForbidden,
 				})
-				w.Header().Add("Location", "/api/v1/signin")
 				return
 			}
 			// Csrf-Token validation.
@@ -62,26 +64,26 @@ func Csrf(h http.Handler) http.Handler {
 			})
 			if err != nil {
 				logger.Error(
-					fmt.Sprintf("CSRF-token validation error: %v", err),
+					fmt.Sprintf("csrf-token validation error: %v", err),
 					zap.String(myconstants.RequestId, requestId),
 				)
 				functions.ErrorResponse(functions.ErrorResponseProps{
 					W:          w,
-					Msg:        "Unexpected internal server error. Try again, please!",
+					Msg:        "unexpected internal server error, try again, please",
 					CodeStatus: http.StatusInternalServerError,
 				})
 				return
 			}
 			if !isValid {
-				logger.Info("Invalid CSRF-Token. User was redirected to the authorization form.",
+				logger.Info("invalid csrf-token, user was redirected to the authorization form",
 					zap.String(myconstants.RequestId, requestId),
 				)
+				w.Header().Add("Location", "/api/v1/signin")
 				functions.ErrorResponse(functions.ErrorResponseProps{
 					W:          w,
-					Msg:        "Invalid CSRF-Token. You were redirected to the authorization form.",
+					Msg:        "invalid csrf-token, you were redirected to the authorization form",
 					CodeStatus: http.StatusForbidden,
 				})
-				w.Header().Add("Location", "/api/v1/signin")
 				return
 			}
 		}
@@ -97,7 +99,8 @@ func isValidCsrfToken(ts tokens) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if hash != ts.CsrfToken {
+	token := hex.EncodeToString([]byte(hash))
+	if token != ts.CsrfToken {
 		return false, nil
 	}
 	return true, nil

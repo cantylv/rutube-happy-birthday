@@ -1,7 +1,7 @@
 package functions
 
 import (
-	"encoding/base64"
+	"encoding/hex"
 	"time"
 
 	"github.com/cantylv/service-happy-birthday/internal/entity"
@@ -17,10 +17,14 @@ type NewJwtTokenProps struct {
 // NewCsrfToken
 // Generates csrf-token.
 func NewCsrfToken(jwtToken string) (string, error) {
-	return HashWithStatement(HashProps{
+	hash, err := HashWithStatement(HashProps{
 		EnvName:   myconstants.EnvCsrfSecret,
 		Statement: jwtToken,
 	})
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString([]byte(hash)), nil
 }
 
 // NewCsrfToken
@@ -34,7 +38,7 @@ func NewJwtToken(props NewJwtTokenProps) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	hEncoded := base64.StdEncoding.EncodeToString(rawDataHeader)
+	hEncoded := hex.EncodeToString(rawDataHeader)
 	// Encode payload.
 	p := entity.JwtTokenPayload{
 		Id: props.UserId,
@@ -43,15 +47,16 @@ func NewJwtToken(props NewJwtTokenProps) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	pEncoded := base64.StdEncoding.EncodeToString([]byte(rawDataPayload))
+	pEncoded := hex.EncodeToString(rawDataPayload)
 	// concatenate header and payload
 	hpEncoded := hEncoded + "." + pEncoded
-	signature, err := HashWithStatement(HashProps{
+	signatureHash, err := HashWithStatement(HashProps{
 		EnvName:   myconstants.EnvJwtSecret,
 		Statement: hpEncoded,
 	})
 	if err != nil {
 		return "", err
 	}
+	signature := hex.EncodeToString([]byte(signatureHash))
 	return hpEncoded + "." + signature, nil
 }

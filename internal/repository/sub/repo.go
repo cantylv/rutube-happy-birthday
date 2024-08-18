@@ -3,23 +3,32 @@ package sub
 
 import (
 	"context"
-	"errors"
 
 	"github.com/cantylv/service-happy-birthday/internal/utils/myconstants"
-	"github.com/cantylv/service-happy-birthday/internal/utils/myerrors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Repo interface {
-	Subscribe(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error)
-	NewSubscription(ctx context.Context, ids SubProps) error
+	UpdateSubscribtion(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error)
+	NewSubscription(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error)
 	Unsubscribe(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error)
-	ChangeInterval(ctx context.Context, data SetUpIntervalProps) error
+	ChangeInterval(ctx context.Context, data SetUpIntervalProps) (*mongo.UpdateResult, error)
 }
 
 type RepoLayer struct {
 	cl *mongo.Collection
+}
+
+type SubProps struct {
+	IdFollower primitive.ObjectID
+	IdEmployee string
+}
+
+type SetUpIntervalProps struct {
+	Ids         SubProps
+	NewInterval uint16
 }
 
 // NewRepoLayer
@@ -30,20 +39,9 @@ func NewRepoLayer(collection *mongo.Collection) RepoLayer {
 	}
 }
 
-// Props
-type SubProps struct {
-	IdFollower uint32
-	IdEmployee uint32
-}
-
-type SetUpIntervalProps struct {
-	Ids         SubProps
-	NewInterval uint16
-}
-
-// Subscribe
-// Subscribes to an employee. Result --> element in array 'subs' with field 'is_followed == true'.
-func (r *RepoLayer) Subscribe(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error) {
+// UpdateSubscribtion
+// Update subscribtion to an employee. Result --> element in array 'subs' with field 'is_followed == true'.
+func (r *RepoLayer) UpdateSubscribtion(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error) {
 	filter := bson.M{"_id": ids.IdFollower, "subs.employee_id": ids.IdEmployee}
 	newData := bson.M{"$set": bson.M{"subs.$.is_followed": true}}
 	return r.cl.UpdateOne(ctx, filter, newData)
@@ -51,7 +49,7 @@ func (r *RepoLayer) Subscribe(ctx context.Context, ids SubProps) (*mongo.UpdateR
 
 // NewSubscription
 // Subscribes to an employee. Result --> new element in array 'subs'.
-func (r *RepoLayer) NewSubscription(ctx context.Context, ids SubProps) error {
+func (r *RepoLayer) NewSubscription(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error) {
 	newData := bson.M{
 		"employee_id": ids.IdEmployee,
 		"interval":    myconstants.DefaultInterval,
@@ -61,14 +59,7 @@ func (r *RepoLayer) NewSubscription(ctx context.Context, ids SubProps) error {
 	newData = bson.M{
 		"$push": bson.M{"subs": newData},
 	}
-	resUpdate, err := r.cl.UpdateOne(ctx, filter, newData)
-	if err != nil {
-		return err
-	}
-	if resUpdate.MatchedCount == 0 || resUpdate.ModifiedCount == 0 {
-		return errors.New(myerrors.UpdateFailed)
-	}
-	return nil
+	return r.cl.UpdateOne(ctx, filter, newData)
 }
 
 // Unsubscribe
@@ -82,15 +73,8 @@ func (r *RepoLayer) Unsubscribe(ctx context.Context, ids SubProps) (*mongo.Updat
 
 // ChangeInterval
 // Change the value of field 'subs.interval' for specific element in field (array) 'subs'.
-func (r *RepoLayer) ChangeInterval(ctx context.Context, data SetUpIntervalProps) error {
+func (r *RepoLayer) ChangeInterval(ctx context.Context, data SetUpIntervalProps) (*mongo.UpdateResult, error) {
 	filter := bson.M{"_id": data.Ids.IdFollower, "subs.employee_id": data.Ids.IdEmployee}
 	newData := bson.M{"$set": bson.M{"subs.$.interval": data.NewInterval}}
-	res, err := r.cl.UpdateOne(ctx, filter, newData)
-	if err != nil {
-		return err
-	}
-	if res.MatchedCount != 0 && res.ModifiedCount == 0 {
-		return errors.New(myerrors.UpdateFailed)
-	}
-	return nil
+	return r.cl.UpdateOne(ctx, filter, newData)
 }

@@ -13,10 +13,10 @@ const (
 
 // Naming.
 const (
-	RequestId     = "Request-ID"
-	UserId        = "User-ID"
+	RequestId     = "request-id"
+	UserId        = "user-id"
 	CsrfHeader    = "X-CSRF-Token"
-	JwtCookie     = "Jwt-Token"
+	JwtCookie     = "jwt-token"
 	EnvCsrfSecret = "CSRF_SECRET"
 	EnvJwtSecret  = "JWT_SECRET"
 )

@@ -19,7 +19,7 @@ func Init(props AuthProps) {
 	usecaseAuth := uAuth.NewUsecaseLayer(&repoUser)
 	deliveryAuth := auth.NewDeliveryLayer(&usecaseAuth)
 	// need to define delivery struct for auth handlers
-	props.Router.HandleFunc("/api/v1/signup", deliveryAuth.SignUp)
-	props.Router.HandleFunc("/api/v1/signin", deliveryAuth.SignIn)
-	props.Router.HandleFunc("/api/v1/signout", deliveryAuth.SignOut)
+	props.Router.HandleFunc("/api/v1/signup", deliveryAuth.SignUp).Methods("POST")
+	props.Router.HandleFunc("/api/v1/signin", deliveryAuth.SignIn).Methods("POST")
+	props.Router.HandleFunc("/api/v1/signout", deliveryAuth.SignOut).Methods("POST")
 }

@@ -29,10 +29,6 @@ func setDefaultParameters() {
 		os.Setenv(myconstants.EnvJwtSecret, uuid.NewV4().String())
 	}
 
-	// __nginx__ variables
-	viper.SetDefault("nginx.host", "127.0.0.1")
-	viper.SetDefault("nginx.port", 80)
-
 	// __server__ variables
 	viper.SetDefault("server.host", "127.0.0.1")
 	viper.SetDefault("server.port", 8000)
@@ -51,10 +47,6 @@ func setDefaultParameters() {
 	// __memcache__ variables
 	viper.SetDefault("memcache.host", "127.0.0.1")
 	viper.SetDefault("memcache.port", 11211)
-
-	// __redis__ variables
-	viper.SetDefault("redis.host", "127.0.0.1")
-	viper.SetDefault("redis.port", 6379)
 }
 
 // getFlags
@@ -74,7 +66,6 @@ func getFlags() {
 	viper.BindPFlag("config", pflag.Lookup("config"))
 	viper.BindPFlag("graceful-timeout", pflag.Lookup("graceful-timeout"))
 
-	viper.BindPFlag("nginx.host", pflag.Lookup("host"))
 	viper.BindPFlag("server.host", pflag.Lookup("host"))
 	viper.BindPFlag("kafka.host", pflag.Lookup("host"))
 	viper.BindPFlag("mongodb.host", pflag.Lookup("host"))
@@ -90,13 +81,13 @@ func Read() {
 	viper.SetConfigFile(viper.GetString("config"))
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(*os.PathError); !ok {
-			logger.Panicf("Fatal error config file: %v.", err)
+			logger.Panicf("fatal error config file: %v", err)
 		}
-		logger.Warn("Warning: configuration file is not found. Programm will be executed within default configuration.")
+		logger.Warn("warning: configuration file is not found, programm will be executed within default configuration")
 	}
 
 	config := viper.AllSettings()
-	logger.Infof("Successful read of configuration. Current Viper Configuration: %v", config)
+	logger.Infof("successful read of configuration, current viper configuration: %v", config)
 }
 
 // Notification

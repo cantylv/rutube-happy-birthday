@@ -26,7 +26,7 @@ func NewDeliveryLayer(usecase uAuth.Usecase) DeliveryLayer {
 }
 
 func (h *DeliveryLayer) SignUp(w http.ResponseWriter, r *http.Request) {
-	logger := zap.Must(zap.NewProduction()).Sugar()
+	logger := zap.Must(zap.NewProduction())
 
 	requestId := functions.GetCtxRequestId(r)
 	jwtToken, err := functions.GetJWtToken(r)
@@ -81,7 +81,7 @@ func (h *DeliveryLayer) SignUp(w http.ResponseWriter, r *http.Request) {
 	uId, err := h.u.SignUpUser(r.Context(), signUpData)
 	if err != nil {
 		if errors.Is(err, myerrors.ErrUserAlreadyExist) {
-			logger.Info(fmt.Sprintf("user with this email already exist, failed to register"), zap.String(myconstants.RequestId, requestId))
+			logger.Info("user with this email already exist, failed to register", zap.String(myconstants.RequestId, requestId))
 			functions.ErrorResponse(functions.ErrorResponseProps{
 				W:          w,
 				Msg:        myerrors.ErrEmailIsReserved.Error(),
@@ -120,7 +120,7 @@ func (h *DeliveryLayer) SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DeliveryLayer) SignIn(w http.ResponseWriter, r *http.Request) {
-	logger := zap.Must(zap.NewProduction()).Sugar()
+	logger := zap.Must(zap.NewProduction())
 
 	requestId := functions.GetCtxRequestId(r)
 	jwtToken, err := functions.GetJWtToken(r)
@@ -134,10 +134,10 @@ func (h *DeliveryLayer) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if jwtToken != "" {
-		logger.Info("user is already registered", zap.String(myconstants.RequestId, requestId))
+		logger.Info("user is already authenticated", zap.String(myconstants.RequestId, requestId))
 		functions.ErrorResponse(functions.ErrorResponseProps{
 			W:          w,
-			Msg:        myerrors.ErrAlreadyRegistered.Error(),
+			Msg:        myerrors.ErrAlreadyAuthenticated.Error(),
 			CodeStatus: http.StatusUnauthorized,
 		})
 		return
@@ -214,7 +214,7 @@ func (h *DeliveryLayer) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DeliveryLayer) SignOut(w http.ResponseWriter, r *http.Request) {
-	logger := zap.Must(zap.NewDevelopment()).Sugar()
+	logger := zap.Must(zap.NewDevelopment())
 
 	requestId := functions.GetCtxRequestId(r)
 	jwtToken, err := functions.GetJWtToken(r)
