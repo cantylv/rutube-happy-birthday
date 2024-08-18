@@ -64,6 +64,24 @@ func (d *DeliveryLayer) Sub(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		if errors.Is(err, myerrors.ErrSubscribeNonExistUser) {
+			logger.Info("user could not subscribe because there is no such user", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrSubscribeNonExistUser.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
+		if errors.Is(err, myerrors.ErrSubscribeYourself) {
+			logger.Info("user has tried to subscribed himself", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrSubscribeYourself.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
 		logger.Error(fmt.Sprintf("internal error: %v", err), zap.String(myconstants.RequestId, requestId))
 		functions.ErrorResponse(functions.ErrorResponseProps{
 			W:          w,
@@ -120,6 +138,24 @@ func (d *DeliveryLayer) Unsub(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		if errors.Is(err, myerrors.ErrUnsubscribeNonExistUser) {
+			logger.Info("user could not unsubscribe because there is no such user", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrUnsubscribeNonExistUser.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
+		if errors.Is(err, myerrors.ErrUnsubscribeYourself) {
+			logger.Info("user has tried to unsubscribed himself", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrUnsubscribeYourself.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
 		logger.Error(fmt.Sprintf("internal error: %v", err), zap.String(myconstants.RequestId, requestId))
 		functions.ErrorResponse(functions.ErrorResponseProps{
 			W:          w,
@@ -162,7 +198,7 @@ func (d *DeliveryLayer) ChangeSubInterval(w http.ResponseWriter, r *http.Request
 	}
 
 	vars := mux.Vars(r)
-	intervalString := vars["employee_id"]
+	intervalString := vars["interval"]
 	interval, err := strconv.Atoi(intervalString)
 	if err != nil {
 		logger.Info("user provided wrong value of path parameter 'employee_id'", zap.String(myconstants.RequestId, requestId))
@@ -195,6 +231,24 @@ func (d *DeliveryLayer) ChangeSubInterval(w http.ResponseWriter, r *http.Request
 			functions.ErrorResponse(functions.ErrorResponseProps{
 				W:          w,
 				Msg:        myerrors.ErrNoSubscriptionEmployee.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
+		if errors.Is(err, myerrors.ErrSetIntervalNonExistUser) {
+			logger.Info("user has tried to set the interval for non-existent user birthday", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrSetIntervalNonExistUser.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
+		if errors.Is(err, myerrors.ErrSetIntervalYourself) {
+			logger.Info("user has tried to set an interval for his birthday", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrSetIntervalYourself.Error(),
 				CodeStatus: http.StatusBadRequest,
 			})
 			return

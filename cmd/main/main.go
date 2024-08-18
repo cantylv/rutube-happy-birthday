@@ -11,6 +11,7 @@ import (
 // 2) add memcache
 // 3) add docker-compose.yaml
 // 4) write tests
+// 5) add check that user can't change interval if he is not subscribed on employee
 func main() {
 	// setup configuration
 	config.Read()

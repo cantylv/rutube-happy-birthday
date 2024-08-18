@@ -2,6 +2,7 @@ package sub
 
 import (
 	"context"
+	"errors"
 
 	"github.com/cantylv/service-happy-birthday/internal/entity"
 	"github.com/cantylv/service-happy-birthday/internal/repository/sub"
@@ -30,7 +31,7 @@ func NewUsecaseLayer(rSub sub.Repo, rUser user.Repo) UsecaseLayer {
 }
 
 func (uc *UsecaseLayer) Subscribe(ctx context.Context, ids entity.SubProps) error {
-	// check user existence
+	// check follower existence
 	followerId, err := primitive.ObjectIDFromHex(ids.IdFollower)
 	if err != nil {
 		return err
@@ -38,6 +39,22 @@ func (uc *UsecaseLayer) Subscribe(ctx context.Context, ids entity.SubProps) erro
 	_, err = uc.repoUser.GetById(ctx, followerId)
 	if err != nil {
 		return err
+	}
+	// check employee existence
+	employeeId, err := primitive.ObjectIDFromHex(ids.IdEmployee)
+	if err != nil {
+		return err
+	}
+	_, err = uc.repoUser.GetById(ctx, employeeId)
+	if err != nil {
+		if errors.Is(err, myerrors.ErrUserNotExist) {
+			return myerrors.ErrSubscribeNonExistUser
+		}
+		return err
+	}
+	// check if IdFollower == IdEmployee
+	if ids.IdEmployee == ids.IdFollower {
+		return myerrors.ErrSubscribeYourself
 	}
 	idsDB, err := functions.ConverterIdsDB(ids)
 	if err != nil {
@@ -62,6 +79,7 @@ func (uc *UsecaseLayer) Subscribe(ctx context.Context, ids entity.SubProps) erro
 }
 
 func (uc *UsecaseLayer) Unsubscribe(ctx context.Context, ids entity.SubProps) error {
+	// check follower existence
 	followerId, err := primitive.ObjectIDFromHex(ids.IdFollower)
 	if err != nil {
 		return err
@@ -69,6 +87,22 @@ func (uc *UsecaseLayer) Unsubscribe(ctx context.Context, ids entity.SubProps) er
 	_, err = uc.repoUser.GetById(ctx, followerId)
 	if err != nil {
 		return err
+	}
+	// check employee existence
+	employeeId, err := primitive.ObjectIDFromHex(ids.IdEmployee)
+	if err != nil {
+		return err
+	}
+	_, err = uc.repoUser.GetById(ctx, employeeId)
+	if err != nil {
+		if errors.Is(err, myerrors.ErrUserNotExist) {
+			return myerrors.ErrUnsubscribeNonExistUser
+		}
+		return err
+	}
+	// check if IdFollower == IdEmployee
+	if ids.IdEmployee == ids.IdFollower {
+		return myerrors.ErrUnsubscribeYourself
 	}
 	idsDB, err := functions.ConverterIdsDB(ids)
 	if err != nil {
@@ -84,6 +118,7 @@ func (uc *UsecaseLayer) Unsubscribe(ctx context.Context, ids entity.SubProps) er
 }
 
 func (uc *UsecaseLayer) ChangeInterval(ctx context.Context, intervalData entity.SetUpIntervalProps) error {
+	// check follower existence
 	followerId, err := primitive.ObjectIDFromHex(intervalData.Ids.IdFollower)
 	if err != nil {
 		return err
@@ -91,6 +126,22 @@ func (uc *UsecaseLayer) ChangeInterval(ctx context.Context, intervalData entity.
 	_, err = uc.repoUser.GetById(ctx, followerId)
 	if err != nil {
 		return err
+	}
+	// check employee existence
+	employeeId, err := primitive.ObjectIDFromHex(intervalData.Ids.IdEmployee)
+	if err != nil {
+		return err
+	}
+	_, err = uc.repoUser.GetById(ctx, employeeId)
+	if err != nil {
+		if errors.Is(err, myerrors.ErrUserNotExist) {
+			return myerrors.ErrSetIntervalNonExistUser
+		}
+		return err
+	}
+	// check if IdFollower == IdEmployee
+	if intervalData.Ids.IdEmployee == intervalData.Ids.IdFollower {
+		return myerrors.ErrSetIntervalYourself
 	}
 	intervalDataDB, err := functions.ConverterIntervalDB(intervalData)
 	if err != nil {
