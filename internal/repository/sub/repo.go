@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Repo interface {
@@ -15,6 +16,7 @@ type Repo interface {
 	NewSubscription(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error)
 	Unsubscribe(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error)
 	ChangeInterval(ctx context.Context, data SetUpIntervalProps) (*mongo.UpdateResult, error)
+	IsFollowed(ctx context.Context, data SubProps) (bool, error)
 }
 
 type RepoLayer struct {
@@ -77,4 +79,29 @@ func (r *RepoLayer) ChangeInterval(ctx context.Context, data SetUpIntervalProps)
 	filter := bson.M{"_id": data.Ids.IdFollower, "subs.employee_id": data.Ids.IdEmployee}
 	newData := bson.M{"$set": bson.M{"subs.$.interval": data.NewInterval}}
 	return r.cl.UpdateOne(ctx, filter, newData)
+}
+
+// ChangeInterval
+// Check that follower followed employee.
+func (r *RepoLayer) IsFollowed(ctx context.Context, data SubProps) (bool, error) {
+	filter := bson.M{
+		"_id":              data.IdFollower,
+		"subs.employee_id": data.IdEmployee,
+	}
+	projection := bson.M{
+		"subs.$": 1, // return only needed element of array
+	}
+
+	var result struct {
+		Subs []struct {
+			IsFollowed bool `bson:"is_followed"`
+		} `bson:"subs"`
+	}
+
+	err := r.cl.FindOne(ctx, filter, options.FindOne().SetProjection(projection)).Decode(&result)
+	if err != nil {
+		return false, err
+	}
+
+	return result.Subs[0].IsFollowed, nil
 }

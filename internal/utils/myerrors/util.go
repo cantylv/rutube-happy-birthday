@@ -15,6 +15,7 @@ var (
 	ErrInternal                = errors.New("unexpected internal server error, please try again in one minute")
 	ErrAlreadyRegistered       = errors.New("you're already registered")
 	ErrAlreadyAuthenticated    = errors.New("you're already authenticated")
+	ErrSetIntervalNotSubscribe = errors.New("you can't set interval birthday if you are't subscribed on employee")
 	ErrSubscribeYourself       = errors.New("you can't subscribe to yourself")
 	ErrUnsubscribeYourself     = errors.New("you can't unsubscribe to yourself")
 	ErrSubscribeNonExistUser   = errors.New("you can't subscribe to a non-existent user")

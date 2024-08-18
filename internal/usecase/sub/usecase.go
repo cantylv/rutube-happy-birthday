@@ -147,6 +147,18 @@ func (uc *UsecaseLayer) ChangeInterval(ctx context.Context, intervalData entity.
 	if err != nil {
 		return err
 	}
+	// check that follower followed employee
+	idsDB, err := functions.ConverterIdsDB(intervalData.Ids)
+	if err != nil {
+		return err
+	}
+	isFollow, err := uc.repoSub.IsFollowed(ctx, idsDB)
+	if err != nil {
+		return err
+	}
+	if !isFollow {
+		return myerrors.ErrSetIntervalNotSubscribe
+	}
 	res, err := uc.repoSub.ChangeInterval(ctx, intervalDataDB)
 	if err != nil {
 		return err

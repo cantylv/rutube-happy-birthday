@@ -253,6 +253,15 @@ func (d *DeliveryLayer) ChangeSubInterval(w http.ResponseWriter, r *http.Request
 			})
 			return
 		}
+		if errors.Is(err, myerrors.ErrSetIntervalNotSubscribe) {
+			logger.Info("user tried to set an interval for the birthday of an employee who is not subscribed to", zap.String(myconstants.RequestId, requestId))
+			functions.ErrorResponse(functions.ErrorResponseProps{
+				W:          w,
+				Msg:        myerrors.ErrSetIntervalNotSubscribe.Error(),
+				CodeStatus: http.StatusBadRequest,
+			})
+			return
+		}
 		logger.Error(fmt.Sprintf("internal error: %v", err), zap.String(myconstants.RequestId, requestId))
 		functions.ErrorResponse(functions.ErrorResponseProps{
 			W:          w,
