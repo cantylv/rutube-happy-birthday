@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  # services (sqldb, s3, in-memory)
+  mongo:
+    image: mongo:latest
+    restart: always
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    tty: true
+  memcached:
+    image: mongo:latest  
+    restart: always
+    container_name: memcached
+    ports:
+      - 11211:11211
+    tty: true
+  birthday-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    container_name: server
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongo
+      - memcached

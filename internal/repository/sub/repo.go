@@ -102,6 +102,9 @@ func (r *RepoLayer) IsFollowed(ctx context.Context, data SubProps) (bool, error)
 	if err != nil {
 		return false, err
 	}
+	if len(result.Subs) == 0 {
+		return false, nil
+	}
 
 	return result.Subs[0].IsFollowed, nil
 }

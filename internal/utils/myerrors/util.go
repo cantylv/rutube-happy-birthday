@@ -8,6 +8,7 @@ var (
 	ErrInvalidObjectId  = errors.New("object ID was not received")
 	ErrUpdateFailed     = errors.New("error while updating document")
 	ErrUserNotExist     = errors.New("user was not found")
+	ErrPwdMismatch      = errors.New("passwords are mismatch")
 	ErrUserAlreadyExist = errors.New("user already exists")
 	ErrNoSubscription   = errors.New("user doesn't have subscription")
 

@@ -19,4 +19,5 @@ const (
 	JwtCookie     = "jwt-token"
 	EnvCsrfSecret = "CSRF_SECRET"
 	EnvJwtSecret  = "JWT_SECRET"
+	EnvSecretKey  = "KEY_SECRET"
 )

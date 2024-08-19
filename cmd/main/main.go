@@ -6,12 +6,11 @@ import (
 	"github.com/cantylv/service-happy-birthday/internal/app"
 )
 
+// 1day
 // list of tasks
-// 1) add hash and salt for password
 // 2) add memcache
-// 3) add docker-compose.yaml
 // 4) write tests
-// 5) add check that user can't change interval if he is not subscribed on employee
+// 6) remove password from return http data
 func main() {
 	// setup configuration
 	config.Read()

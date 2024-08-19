@@ -1,6 +1,8 @@
 package functions
 
 import (
+	"encoding/hex"
+
 	"github.com/cantylv/service-happy-birthday/internal/entity"
 	"github.com/cantylv/service-happy-birthday/internal/repository/sub"
 	"github.com/cantylv/service-happy-birthday/internal/repository/user"
@@ -8,21 +10,27 @@ import (
 )
 
 func ConverterUpdateUserDB(data *entity.UserUpdate, uId primitive.ObjectID) *user.User {
+	// need to hash and salt password, email
+	pwdEncoded := hex.EncodeToString([]byte(data.Password))
+	emailEncoded := hex.EncodeToString([]byte(data.Email))
 	return &user.User{
 		Id:       uId,
 		FullName: data.FullName,
 		Birthday: data.Birthday,
-		Email:    data.Email,
-		Password: data.Password,
+		Email:    emailEncoded,
+		Password: pwdEncoded,
 	}
 }
 
 func ConverterCreateUserDB(data *entity.SignUpForm) *user.User {
+	// need to hash and salt password, email
+	pwdEncoded := hex.EncodeToString([]byte(data.Password))
+	emailEncoded := hex.EncodeToString([]byte(data.Email))
 	return &user.User{
 		FullName: data.FullName,
 		Birthday: data.Birthday,
-		Email:    data.Email,
-		Password: data.Password,
+		Email:    emailEncoded,
+		Password: pwdEncoded,
 		Subs:     []entity.Subscription{},
 	}
 }
@@ -52,13 +60,16 @@ func ConverterIntervalDB(ids entity.SetUpIntervalProps) (sub.SetUpIntervalProps,
 	}, nil
 }
 
-func ConverterUserEntity(data *user.User) *entity.User {
+func ConverterUserEntity(data *user.User) (*entity.User, error) {
+	decodedEmail, err := hex.DecodeString(data.Email)
+	if err != nil {
+		return nil, err
+	}
 	return &entity.User{
 		Id:       data.Id.Hex(),
 		FullName: data.FullName,
 		Birthday: data.Birthday,
-		Email:    data.Email,
-		Password: data.Password,
+		Email:    string(decodedEmail),
 		Subs:     data.Subs,
-	}
+	}, nil
 }

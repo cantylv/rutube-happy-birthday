@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 
 	"github.com/cantylv/service-happy-birthday/internal/entity"
@@ -28,8 +29,8 @@ func NewUsecaseLayer(repo user.Repo) UsecaseLayer {
 }
 
 func (uc *UsecaseLayer) SignUpUser(ctx context.Context, data entity.SignUpForm) (string, error) {
-
-	u, err := uc.repo.GetByEmail(ctx, data.Email)
+	encodedEmail := hex.EncodeToString([]byte(data.Email))
+	u, err := uc.repo.GetByEmail(ctx, encodedEmail)
 	if err != nil {
 		if errors.Is(err, myerrors.ErrUserNotExist) {
 			uId, err := uc.repo.Create(ctx, functions.ConverterCreateUserDB(&data))
@@ -44,9 +45,17 @@ func (uc *UsecaseLayer) SignUpUser(ctx context.Context, data entity.SignUpForm) 
 }
 
 func (uc *UsecaseLayer) SignInUser(ctx context.Context, data entity.SignInForm) (string, error) {
-	u, err := uc.repo.GetByEmail(ctx, data.Email)
+	encodedEmail := hex.EncodeToString([]byte(data.Email))
+	u, err := uc.repo.GetByEmail(ctx, encodedEmail)
 	if err != nil {
 		return "", err
+	}
+	decodedPwd, err := hex.DecodeString(u.Password)
+	if err != nil {
+		return "", err
+	}
+	if string(decodedPwd) != data.Password {
+		return "", myerrors.ErrPwdMismatch
 	}
 	return u.Id.Hex(), nil
 }

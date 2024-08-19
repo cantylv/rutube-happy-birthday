@@ -78,6 +78,17 @@ func (h *DeliveryLayer) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = signUpData.Validate()
+	if err != nil {
+		logger.Info("error while struct validate: "+err.Error(), zap.String(myconstants.RequestId, requestId))
+		functions.ErrorResponse(functions.ErrorResponseProps{
+			W:          w,
+			Msg:        myerrors.ErrBadCredentials.Error(),
+			CodeStatus: http.StatusBadRequest,
+		})
+		return
+	}
+
 	uId, err := h.u.SignUpUser(r.Context(), signUpData)
 	if err != nil {
 		if errors.Is(err, myerrors.ErrUserAlreadyExist) {
@@ -172,9 +183,20 @@ func (h *DeliveryLayer) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = signInData.Validate()
+	if err != nil {
+		logger.Info("error while struct validate: "+err.Error(), zap.String(myconstants.RequestId, requestId))
+		functions.ErrorResponse(functions.ErrorResponseProps{
+			W:          w,
+			Msg:        myerrors.ErrBadCredentials.Error(),
+			CodeStatus: http.StatusBadRequest,
+		})
+		return
+	}
+
 	uId, err := h.u.SignInUser(r.Context(), signInData)
 	if err != nil {
-		if errors.Is(err, myerrors.ErrUserNotExist) {
+		if errors.Is(err, myerrors.ErrUserNotExist) || errors.Is(err, myerrors.ErrPwdMismatch) {
 			logger.Info("user provided wrong credentials", zap.String(myconstants.RequestId, requestId))
 			functions.ErrorResponse(functions.ErrorResponseProps{
 				W:          w,

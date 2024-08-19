@@ -10,6 +10,7 @@ import (
 	"github.com/cantylv/service-happy-birthday/internal/utils/functions"
 	"github.com/cantylv/service-happy-birthday/internal/utils/myerrors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Usecase interface {
@@ -153,7 +154,7 @@ func (uc *UsecaseLayer) ChangeInterval(ctx context.Context, intervalData entity.
 		return err
 	}
 	isFollow, err := uc.repoSub.IsFollowed(ctx, idsDB)
-	if err != nil {
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return err
 	}
 	if !isFollow {

@@ -36,7 +36,11 @@ func (uc *UsecaseLayer) GetData(ctx context.Context, employee_id string) (*entit
 	if err != nil {
 		return nil, err
 	}
-	return functions.ConverterUserEntity(uDB), nil
+	u, err := functions.ConverterUserEntity(uDB)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
 }
 
 func (uc *UsecaseLayer) UpdateData(ctx context.Context, uData *entity.UserUpdate, uId string) error {

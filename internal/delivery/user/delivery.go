@@ -140,6 +140,17 @@ func (d *DeliveryLayer) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = signUpData.Validate()
+	if err != nil {
+		logger.Info("error while struct validate: "+err.Error(), zap.String(myconstants.RequestId, requestId))
+		functions.ErrorResponse(functions.ErrorResponseProps{
+			W:          w,
+			Msg:        myerrors.ErrBadCredentials.Error(),
+			CodeStatus: http.StatusBadRequest,
+		})
+		return
+	}
+
 	userIdValue := r.Context().Value(myconstants.UserId)
 	if userIdValue == nil {
 		logger.Error("error while receiving employeeId", zap.String(myconstants.RequestId, requestId))
