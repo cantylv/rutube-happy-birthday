@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/cantylv/service-happy-birthday/internal/crontasks"
 	"github.com/cantylv/service-happy-birthday/internal/route"
 	"github.com/cantylv/service-happy-birthday/internal/utils/functions"
 	"github.com/cantylv/service-happy-birthday/services"
@@ -36,7 +37,15 @@ func Run() {
 		if err != nil {
 			logger.Errorf("error close memcache connections: %v", err)
 		}
+		err = serviceCluster.EmailBroker.Close()
+		if err != nil {
+			logger.Errorf("error close kafka consumer: %v", err)
+		}
 	}()
+
+	// Initialization cron tasks.
+	cTasks := crontasks.InitCronTasks()
+	defer cTasks.Stop()
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", viper.GetString("server.host"), viper.GetUint16("server.port")),

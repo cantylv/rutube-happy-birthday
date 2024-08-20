@@ -24,8 +24,11 @@ type RepoLayer struct {
 }
 
 type SubProps struct {
-	IdFollower primitive.ObjectID
-	IdEmployee string
+	IdFollower       primitive.ObjectID
+	IdEmployee       string
+	FullNameEmployee string
+	BirthdayEmployee string
+	EmailEmployee    string
 }
 
 type SetUpIntervalProps struct {
@@ -53,9 +56,12 @@ func (r *RepoLayer) UpdateSubscribtion(ctx context.Context, ids SubProps) (*mong
 // Subscribes to an employee. Result --> new element in array 'subs'.
 func (r *RepoLayer) NewSubscription(ctx context.Context, ids SubProps) (*mongo.UpdateResult, error) {
 	newData := bson.M{
-		"employee_id": ids.IdEmployee,
-		"interval":    myconstants.DefaultInterval,
-		"is_followed": true,
+		"employee_id":        ids.IdEmployee,
+		"employee_email":     ids.EmailEmployee,
+		"employee_birthday":  ids.BirthdayEmployee,
+		"employee_full_name": ids.FullNameEmployee,
+		"interval":           myconstants.DefaultInterval,
+		"is_followed":        true,
 	}
 	filter := bson.M{"_id": ids.IdFollower}
 	newData = bson.M{

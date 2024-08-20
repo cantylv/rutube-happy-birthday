@@ -46,7 +46,7 @@ func (uc *UsecaseLayer) Subscribe(ctx context.Context, ids entity.SubProps) erro
 	if err != nil {
 		return err
 	}
-	_, err = uc.repoUser.GetById(ctx, employeeId)
+	uDB, err := uc.repoUser.GetById(ctx, employeeId)
 	if err != nil {
 		if errors.Is(err, myerrors.ErrUserNotExist) {
 			return myerrors.ErrSubscribeNonExistUser
@@ -57,7 +57,7 @@ func (uc *UsecaseLayer) Subscribe(ctx context.Context, ids entity.SubProps) erro
 	if ids.IdEmployee == ids.IdFollower {
 		return myerrors.ErrSubscribeYourself
 	}
-	idsDB, err := functions.ConverterIdsDB(ids)
+	idsDB, err := functions.ConverterIdsDB(ids, uDB)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (uc *UsecaseLayer) Unsubscribe(ctx context.Context, ids entity.SubProps) er
 	if ids.IdEmployee == ids.IdFollower {
 		return myerrors.ErrUnsubscribeYourself
 	}
-	idsDB, err := functions.ConverterIdsDB(ids)
+	idsDB, err := functions.ConverterIdsDB(ids, &user.User{})
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func (uc *UsecaseLayer) ChangeInterval(ctx context.Context, intervalData entity.
 		return err
 	}
 	// check that follower followed employee
-	idsDB, err := functions.ConverterIdsDB(intervalData.Ids)
+	idsDB, err := functions.ConverterIdsDB(intervalData.Ids, &user.User{})
 	if err != nil {
 		return err
 	}

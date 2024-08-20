@@ -1,22 +1,21 @@
 # Copyright © ivanlobanov. All rights reserved.
 server:
-  host: 127.0.0.1
+  host: server
   port: 8000
   write_timeout: 5s
   read_timeout: 5s
   idle_timeout: 1m
 
 kafka:
-  host: 127.0.0.1
+  host: kafka
   port: 6473
+  topic: emails
 
 mongodb:
-  host: 127.0.0.1
+  host: mongodb
   port: 27017
-  root: admin
-  root_password: 123
 
 memcache:
-  host: 127.0.0.1
+  host: memcache
   port: 11211
   

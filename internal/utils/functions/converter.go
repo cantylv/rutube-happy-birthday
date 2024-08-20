@@ -35,14 +35,17 @@ func ConverterCreateUserDB(data *entity.SignUpForm) *user.User {
 	}
 }
 
-func ConverterIdsDB(ids entity.SubProps) (sub.SubProps, error) {
+func ConverterIdsDB(ids entity.SubProps, employeeData *user.User) (sub.SubProps, error) {
 	followerId, err := primitive.ObjectIDFromHex(ids.IdFollower)
 	if err != nil {
 		return sub.SubProps{}, err
 	}
 	return sub.SubProps{
-		IdFollower: followerId,
-		IdEmployee: ids.IdEmployee,
+		IdFollower:       followerId,
+		IdEmployee:       ids.IdEmployee,
+		FullNameEmployee: employeeData.Email,
+		BirthdayEmployee: employeeData.Birthday,
+		EmailEmployee:    employeeData.Email,
 	}, nil
 }
 
@@ -72,4 +75,14 @@ func ConverterUserEntity(data *user.User) (*entity.User, error) {
 		Email:    string(decodedEmail),
 		Subs:     data.Subs,
 	}, nil
+}
+
+func ConverterUserWithoutPwd(data *entity.User) *entity.UserWithoutPassword {
+	return &entity.UserWithoutPassword{
+		Id:       data.Id,
+		FullName: data.FullName,
+		Birthday: data.Birthday,
+		Email:    data.Email,
+		Subs:     data.Subs,
+	}
 }

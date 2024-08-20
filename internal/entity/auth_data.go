@@ -3,10 +3,10 @@ package entity
 import "github.com/asaskevich/govalidator"
 
 type SignUpForm struct {
-	FullName string `json:"full_name" valid:"runelength(5|100)"`
-	Email    string `json:"email" valid:"email"`
-	Password string `json:"password" valid:"password"`
-	Birthday string `json:"birthday" valid:"date"`
+	FullName string `json:"full_name" valid:"user_fullname"`
+	Birthday string `json:"birthday" valid:"user_birthday"`
+	Email    string `json:"email" valid:"user_email"`
+	Password string `json:"password,omitempty" valid:"user_password"`
 }
 
 func (d *SignUpForm) Validate() (bool, error) {
@@ -14,8 +14,8 @@ func (d *SignUpForm) Validate() (bool, error) {
 }
 
 type SignInForm struct {
-	Email    string `json:"email" valid:"email"`
-	Password string `json:"password" valid:"password"`
+	Email    string `json:"email" valid:"user_email"`
+	Password string `json:"password,omitempty" valid:"user_password"`
 }
 
 func (d *SignInForm) Validate() (bool, error) {

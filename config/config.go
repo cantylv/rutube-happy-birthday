@@ -18,7 +18,6 @@ func setDefaultParameters() {
 	viper.AutomaticEnv()
 	// common variables
 	viper.SetDefault("config", "./config/dev/config.yaml")
-	viper.SetDefault("host", "127.0.0.1")
 	viper.SetDefault("graceful-timeout", 10*time.Second)
 
 	// runtime variables
@@ -30,22 +29,23 @@ func setDefaultParameters() {
 	}
 
 	// __server__ variables
-	viper.SetDefault("server.host", "127.0.0.1")
+	viper.SetDefault("server.host", "server")
 	viper.SetDefault("server.port", 8000)
 	viper.SetDefault("server.write_timeout", time.Second*5)
 	viper.SetDefault("server.read_timeout", time.Second*5)
 	viper.SetDefault("server.idle_timeout", time.Second*60)
 
 	// __kafka__ variables
-	viper.SetDefault("kafka.host", "127.0.0.1")
+	viper.SetDefault("kafka.host", "kafka")
 	viper.SetDefault("kafka.port", 6473)
+	viper.SetDefault("kafka.topic", "emails")
 
 	// __mongodb__ variables
-	viper.SetDefault("mongodb.host", "127.0.0.1")
+	viper.SetDefault("mongodb.host", "mongodb")
 	viper.SetDefault("mongodb.port", 27017)
 
 	// __memcache__ variables
-	viper.SetDefault("memcache.host", "127.0.0.1")
+	viper.SetDefault("memcache.host", "memcache")
 	viper.SetDefault("memcache.port", 11211)
 }
 
@@ -53,23 +53,16 @@ func setDefaultParameters() {
 // Bind flags within current viper configuration.
 func getFlags() {
 	var configPath string
-	var host string
 	var wait time.Duration
 
 	// common flags
 	pflag.StringVarP(&configPath, "config", "c", "./config/dev/config.yaml", "Defines the path to the configuration file.")
-	pflag.StringVarP(&host, "host", "h", "127.0.0.1", "Defines the ip-address of the host.")
 	pflag.DurationVarP(&wait, "graceful-timeout", "g", time.Second*10, "The duration for which the server gracefully wait for existing connections to finish.")
 	pflag.Parse()
 
 	// binding flags
 	viper.BindPFlag("config", pflag.Lookup("config"))
 	viper.BindPFlag("graceful-timeout", pflag.Lookup("graceful-timeout"))
-
-	viper.BindPFlag("server.host", pflag.Lookup("host"))
-	viper.BindPFlag("kafka.host", pflag.Lookup("host"))
-	viper.BindPFlag("mongodb.host", pflag.Lookup("host"))
-	viper.BindPFlag("memcache.host", pflag.Lookup("host"))
 }
 
 // Read

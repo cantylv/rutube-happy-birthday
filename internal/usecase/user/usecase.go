@@ -13,7 +13,7 @@ import (
 )
 
 type Usecase interface {
-	GetData(ctx context.Context, employee_id string) (*entity.User, error)
+	GetData(ctx context.Context, employee_id string) (*entity.UserWithoutPassword, error)
 	UpdateData(ctx context.Context, uData *entity.UserUpdate, uId string) error
 }
 
@@ -27,7 +27,7 @@ func NewUsecaseLayer(rUser user.Repo) UsecaseLayer {
 	}
 }
 
-func (uc *UsecaseLayer) GetData(ctx context.Context, employee_id string) (*entity.User, error) {
+func (uc *UsecaseLayer) GetData(ctx context.Context, employee_id string) (*entity.UserWithoutPassword, error) {
 	objectId, err := primitive.ObjectIDFromHex(employee_id)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (uc *UsecaseLayer) GetData(ctx context.Context, employee_id string) (*entit
 	if err != nil {
 		return nil, err
 	}
-	return u, nil
+	return functions.ConverterUserWithoutPwd(u), nil
 }
 
 func (uc *UsecaseLayer) UpdateData(ctx context.Context, uData *entity.UserUpdate, uId string) error {

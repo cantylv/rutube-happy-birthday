@@ -128,8 +128,8 @@ func (d *DeliveryLayer) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var signUpData entity.UserUpdate
-	err = easyjson.Unmarshal(body, &signUpData)
+	var updateData entity.UserUpdate
+	err = easyjson.Unmarshal(body, &updateData)
 	if err != nil {
 		logger.Info(fmt.Sprintf("error while unmarshalling request body: %v", err), zap.String(myconstants.RequestId, requestId))
 		functions.ErrorResponse(functions.ErrorResponseProps{
@@ -140,7 +140,7 @@ func (d *DeliveryLayer) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = signUpData.Validate()
+	_, err = updateData.Validate()
 	if err != nil {
 		logger.Info("error while struct validate: "+err.Error(), zap.String(myconstants.RequestId, requestId))
 		functions.ErrorResponse(functions.ErrorResponseProps{
@@ -162,7 +162,7 @@ func (d *DeliveryLayer) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = d.uc.UpdateData(r.Context(), &signUpData, userIdValue.(string))
+	err = d.uc.UpdateData(r.Context(), &updateData, userIdValue.(string))
 	if err != nil {
 		if errors.Is(err, myerrors.ErrEmailIsReserved) {
 			logger.Info("user with this email already exist, failed to update", zap.String(myconstants.RequestId, requestId))
