@@ -47,18 +47,19 @@ func runEngine(cons sarama.Consumer) {
 	defer file.Close()
 
 	var wg sync.WaitGroup
+	var mtx sync.RWMutex
 	for _, partition := range partitions {
 		partitionConsumer, err := cons.ConsumePartition(viper.GetString("kafka.topic"), partition, sarama.OffsetNewest)
 		if err != nil {
 			logger.Fatal(err.Error())
 		}
 		wg.Add(1)
-		go listen(partitionConsumer, &wg, file)
+		go listen(partitionConsumer, file, &wg, &mtx)
 	}
 	wg.Wait()
 }
 
-func listen(partitionConsumer sarama.PartitionConsumer, wgParent *sync.WaitGroup, file *os.File) {
+func listen(partitionConsumer sarama.PartitionConsumer, file *os.File, wgParent *sync.WaitGroup, mtx *sync.RWMutex) {
 	logger := zap.Must(zap.NewProduction())
 	defer wgParent.Done()
 	defer partitionConsumer.Close()
@@ -71,15 +72,15 @@ func listen(partitionConsumer sarama.PartitionConsumer, wgParent *sync.WaitGroup
 			continue
 		}
 
-		// Сериализуем данные в формат JSON
 		jsonData, err := json.MarshalIndent(segment, "", "    ")
 		if err != nil {
 			logger.Error("error marshalling data:", zap.Error(err))
 			continue
 		}
 
-		// Записываем JSON-данные в файл
+		mtx.Lock()
 		_, err = file.Write(jsonData)
+		mtx.Unlock()
 		if err != nil {
 			logger.Error("error writing to file:", zap.Error(err))
 			return

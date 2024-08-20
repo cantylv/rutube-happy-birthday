@@ -1,2 +1,4 @@
 .history
 .vscode
+services/mongodb/initdb.d/
+services/mongodb/mongodb-data/

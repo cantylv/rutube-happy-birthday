@@ -11,11 +11,13 @@ kafka:
   port: 6473
   topic: emails
 
-mongodb:
-  host: mongodb
+mongo:
+  host: mongo
   port: 27017
+  user: ivan
+  password: 123
 
-memcache:
-  host: memcache
+memcached:
+  host: memcached
   port: 11211
   

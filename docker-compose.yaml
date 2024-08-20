@@ -5,41 +5,76 @@ services:
   mongo:
     image: mongo:latest
     restart: always
-    container_name: mongodb
+    container_name: mongo
+    hostname: mongo
+    volumes:
+      - ./services/mongodb/initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./services/mongodb/mongodb-data:/data/db
+      - ./services/mongodb/mongodb-log:/var/log/mongodb
     ports:
-      - 27017:27017
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=main
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    env_file:
+      - .env
+    networks:
+      - ecosystem
     tty: true
   memcached:
-    image: mongo:latest  
+    image: memcached:latest  
     restart: always
+    hostname: memcached
     container_name: memcached
     ports:
-      - 11211:11211
+      - "11211:11211"
+    networks:
+      - ecosystem
+    command: memcached -m 64
     tty: true
+  zookeeper:
+    hostname: zookeeper
+    container_name: zookeeper
+    restart: always
+    image: wurstmeister/zookeeper:latest
+    ports:
+      - "2181:2181"
+    networks:
+      - ecosystem
   kafka:
-    image: apache/kafka:latest
+    image: wurstmeister/kafka:latest
+    restart: always
     container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
+    expose:
+      - "9093"
     environment:
-      # KRaft settings
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=INSIDE://kafka:9093,OUTSIDE://localhost:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      - KAFKA_LISTENERS=INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INSIDE
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS=emails:1:1
+    networks:
+      - ecosystem
+    depends_on:
+      - zookeeper
   birthday-service:
     build:
       context: ./
       dockerfile: Dockerfile
     restart: always
     container_name: server
+    hostname: server
     ports:
       - 8000:8000
-    depends_on:
-      - mongo
-      - memcached
+    networks:
+      - ecosystem
+    tty: true
+
+networks:
+  ecosystem:
+    driver: bridge

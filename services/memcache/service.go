@@ -13,11 +13,11 @@ import (
 func Init() *memcache.Client {
 	logger := zap.Must(zap.NewProduction()).Sugar()
 
-	connLine := fmt.Sprintf("%s:%d", viper.GetString("memcache.host"), viper.GetUint16("memcache.port"))
+	connLine := fmt.Sprintf("%s:%d", viper.GetString("memcached.host"), viper.GetUint16("memcached.port"))
 	client := memcache.New(connLine)
 	client.MaxIdleConns = 20
 	client.Timeout = 5 * time.Second
 
-	logger.Info("Succesful connection to Memcache.")
+	logger.Info("succesful connection to Memcached")
 	return client
 }

@@ -41,12 +41,12 @@ func setDefaultParameters() {
 	viper.SetDefault("kafka.topic", "emails")
 
 	// __mongodb__ variables
-	viper.SetDefault("mongodb.host", "mongodb")
-	viper.SetDefault("mongodb.port", 27017)
+	viper.SetDefault("mongo.host", "mongo")
+	viper.SetDefault("mongo.port", 27017)
 
 	// __memcache__ variables
-	viper.SetDefault("memcache.host", "memcache")
-	viper.SetDefault("memcache.port", 11211)
+	viper.SetDefault("memcached.host", "memcached")
+	viper.SetDefault("memcached.port", 11211)
 }
 
 // getFlags

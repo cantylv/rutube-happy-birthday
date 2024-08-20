@@ -16,8 +16,8 @@ func Init() *mongo.Client {
 	logger := zap.Must(zap.NewProduction()).Sugar()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	connLine := fmt.Sprintf(`mongodb://%s:%d/main?directConnection=true&tls=false&connectTimeoutMS=5000&socketTimeoutMS=10000&maxPoolSize=30&minPoolSize=0&maxConnecting=3`,
-		viper.GetString("mongodb.host"), viper.GetUint16("mongodb.port"))
+	connLine := fmt.Sprintf(`mongodb://%s:%s@%s:%d/main?directConnection=true&tls=false&connectTimeoutMS=5000&socketTimeoutMS=10000&maxPoolSize=30&minPoolSize=0&maxConnecting=3`,
+		viper.GetString("mongo.user"), viper.GetString("mongo.password"), viper.GetString("mongo.host"), viper.GetUint16("mongo.port"))
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connLine))
 	if err != nil {
 		logger.Panicf("fatal error MongoDB connect: %w", err)
@@ -27,13 +27,13 @@ func Init() *mongo.Client {
 		if err == nil {
 			break
 		}
-		logger.Infof("MongoDB ping n%d: %v.", i, err)
-		time.Sleep(2 * time.Second)
+		logger.Infof("mongoDB ping n%d: %v", i, err)
+		time.Sleep(3 * time.Second)
 		if i == 2 {
 			logger.Panicf("fatal error MongoDB ping: %v", err)
 		}
 	}
 
-	logger.Info("Succesful connection to MongoDB.")
+	logger.Info("succesful connection to MongoDB")
 	return client
 }
