@@ -35,17 +35,16 @@ make run
     "birthday": "23.08.2003"
 }
 ```
-
 <b>Статусы ответов (code statuses): </b>
 
 200 - `{"detail": "you've succesful signed up"}` <br>
 400 - `{"error": "incorrect data received, please try again"}` <br>
-- `{"error: "user already exists"}` <br>
+`{"error: "user already exists"}` <br>
 401 - `{"error": "you're already registered"}` <br>
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>
 
 
-`POST /api/v1/signin` - Авторизация пользователя в системе. <br>
+<br>`POST /api/v1/signin` - Авторизация пользователя в системе.<br>
 <b>Тело запроса (raw json):</b>
 ```
 {
@@ -53,7 +52,6 @@ make run
     "password": "qwerty12345"
 }
 ```
-
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - `{"detail": "you've succesful signed in"}` <br>
@@ -62,20 +60,19 @@ make run
 401 - `{"error": "you're already authenticated"}` <br>
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>   
 
-
-`POST /api/v1/signout` - Деавторизация пользователя в системе. <br>
+<br> `POST /api/v1/signout` - Деавторизация пользователя в системе. <br>
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - `{"detail": "you've succesful signed out"}` <br>
 401 - `{"error": "you're not authenticated"}` <br>
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>
 
+
 #### Важное примечание: после авторизации/регистрации незабудьте использовать значение заголовка X-CSRF-Token для последующих запросах авторизованного пользователя (необходимо создать заголовок `X-CSRF-Token`: value). Таким образом обеспечивается защита от CSRF-аттак.
 
 ### Пользователь
 
-`GET /api/v1/user` - Получение данных о пользователе. <br>
-
+<br> `GET /api/v1/user` - Получение данных о пользователе. <br>
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - 
@@ -89,12 +86,11 @@ make run
     }
 ```
 401 - `{"error": "you're already authenticated"}` <br>
-    - `{"error": "you're not registered in our system"}` <br>
+`{"error": "you're not registered in our system"}` <br>
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>   
 
 
-`PUT /api/v1/user` - Изменение данных пользователя. <br>
-
+<br> `PUT /api/v1/user` - Изменение данных пользователя. <br>
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - 
@@ -107,15 +103,15 @@ make run
     }
 ```
 400 - `{"error": "incorrect data received, please try again"}` <br>
-    - `{"error": "user with this email already exist, failed"}` <br>
+`{"error": "user with this email already exist, failed"}` <br>
 401 - `{"error": "you're already authenticated"}` <br>
-    - `{"error": "you're not registered in our system"}` <br>
+`{"error": "you're not registered in our system"}` <br>
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>   
 
 
 ### Подписки
 
-`POST /api/v1/sub/{employee_id}` - подписка на пользователя с id == {employee_id}
+<br>`POST /api/v1/sub/{employee_id}` - подписка на пользователя с id == {employee_id}
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - `{"detail": "you've succesful subed on employee"}`
@@ -125,7 +121,7 @@ make run
     - `{"error": "you're not registered in our system"}` <br>
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>  
 
-`PUT /api/v1/sub/{employee_id}/new_interval/{interval}` - изменение кол-ва дней до оповещения о дне рождении пользователя
+<br>`PUT /api/v1/sub/{employee_id}/new_interval/{interval}` - изменение кол-ва дней до оповещения о дне рождении пользователя
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - `{"detail": "you've succesful set up new interval"}`
@@ -139,7 +135,7 @@ make run
 500 - `{"error":"unexpected internal server error, please try again in one minute"}` <br>  
 
 
-`POST /api/v1/unsub/{employee_id}` - отписка от пользователя с id == {employee_id}
+<br>`POST /api/v1/unsub/{employee_id}` - отписка от пользователя с id == {employee_id}
 <b>Статусы ответов (code statuses): </b> <br>
 
 200 - `{"detail": "you've succesful unsubed on employee"}`
