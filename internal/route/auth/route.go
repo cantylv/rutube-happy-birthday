@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type 	AuthProps struct {
+type AuthProps struct {
 	Router     *mux.Router
 	Collection *mongo.Collection
 }

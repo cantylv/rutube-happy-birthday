@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// I want to use memcache, but it doesn't fit out data model.
 func Init() *memcache.Client {
 	logger := zap.Must(zap.NewProduction()).Sugar()
 
