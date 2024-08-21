@@ -1,4 +1,6 @@
 .history
 .vscode
-services/mongodb/initdb.d/
+services/mongodb/mongodb-log/
 services/mongodb/mongodb-data/
+vendor
+services/kafka/data

@@ -2,8 +2,13 @@ package crontasks
 
 import (
 	"context"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/IBM/sarama"
@@ -11,7 +16,6 @@ import (
 	"github.com/cantylv/service-happy-birthday/internal/repository/user"
 	"github.com/cantylv/service-happy-birthday/services/kafka/producer"
 	"github.com/cantylv/service-happy-birthday/services/mongodb"
-	"github.com/mailru/easyjson"
 	"github.com/robfig/cron"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,7 +27,7 @@ func InitCronTasks() *cron.Cron {
 	c := cron.New()
 
 	c.AddFunc("@every 10s", InitClearTask)
-	c.AddFunc("@everyday", BirthdayNotification)
+	c.AddFunc("@every 5s", BirthdayNotification)
 
 	c.Start()
 
@@ -91,27 +95,36 @@ func BirthdayNotification() {
 		logger.Errorf("error while extracting documents using cursor: %v", err)
 		return
 	}
-
 	makeNotification(prod, users)
 }
 
 func makeNotification(prod sarama.SyncProducer, users []user.User) {
-	logger := zap.Must(zap.NewProduction())
-	timeNow := time.Now().Truncate(24 * time.Hour)
+	logger := zap.Must(zap.NewProduction()).Sugar()
+	timeNow := time.Now().Format("02.01.2006")
 	for _, user := range users {
 		for _, sub := range user.Subs {
-			// need to calculate dates and time interval between them
-			if intervalNotification(sub.EmployeeBirthday, sub.Interval).Equal(timeNow) {
+			fmt.Printf("TIME NOW %s \n EMPLOYEE TIME %s", timeNow, intervalNotification(sub.EmployeeBirthday, sub.Interval))
+			if intervalNotification(sub.EmployeeBirthday, sub.Interval) == timeNow {
+				decodedFollowerEmail, err := hex.DecodeString(user.Email)
+				if err != nil {
+					logger.Error(err)
+				}
+				decodedEmployeerEmail, err := hex.DecodeString(sub.EmployeeEmail)
+				if err != nil {
+					logger.Error(err)
+				}
 				notification := entity.Notification{
-					FollowerEmail:    user.Email,
+					FollowerEmail:    string(decodedFollowerEmail),
 					FollowerId:       user.Id.Hex(),
-					EmployeeEmail:    sub.EmployeeEmail,
+					EmployeeEmail:    string(decodedEmployeerEmail),
 					EmployeeId:       sub.EmployeeId,
 					EmployeeFullName: sub.EmployeeFullName,
-					Interval:         5,
+					Interval:         sub.Interval,
 				}
+				fmt.Println("NOTIFICATION SEND")
+				fmt.Println(notification)
 				// Сериализация структуры в JSON
-				jsonData, err := easyjson.Marshal(notification)
+				jsonData, err := json.Marshal(notification)
 				if err != nil {
 					log.Fatalf("Failed to marshal notification: %v", err)
 				}
@@ -124,12 +137,16 @@ func makeNotification(prod sarama.SyncProducer, users []user.User) {
 				if err != nil {
 					logger.Error(err.Error())
 				}
+				logger.Info("Message was sent")
 			}
 		}
 	}
+	logger.Infof("%s notifications were sent", time.Now().Format("02.01.2006 15:04:05 UTC-07"))
 }
 
-func intervalNotification(employeeBirthday string, interval uint16) time.Time {
-	t, _ := time.Parse("", employeeBirthday)
-	return t.AddDate(0, 0, int(interval))
+func intervalNotification(employeeBirthday string, interval uint16) string {
+	dates := strings.Split(employeeBirthday, ".")
+	dates[2] = strconv.Itoa(time.Now().Year())
+	t, _ := time.Parse("02.01.2006", strings.Join(dates, "."))
+	return t.AddDate(0, 0, -int(interval)).Format("02.01.2006")
 }

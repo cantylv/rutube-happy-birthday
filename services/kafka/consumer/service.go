@@ -8,7 +8,6 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/cantylv/service-happy-birthday/internal/entity"
-	"github.com/mailru/easyjson"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
@@ -40,9 +39,10 @@ func runEngine(cons sarama.Consumer) {
 	}
 
 	// Открываем файл для записи (если файл не существует, он будет создан)
-	file, err := os.Create("notification.json")
+	file, err := os.Create("./notification.json")
 	if err != nil {
 		logger.Error("error creating file:", zap.Error(err))
+		return
 	}
 	defer file.Close()
 
@@ -60,17 +60,20 @@ func runEngine(cons sarama.Consumer) {
 }
 
 func listen(partitionConsumer sarama.PartitionConsumer, file *os.File, wgParent *sync.WaitGroup, mtx *sync.RWMutex) {
-	logger := zap.Must(zap.NewProduction())
+	logger := zap.Must(zap.NewProduction()).Sugar()
+	logger.Infof("Listen kafka topic %s", viper.GetString("kafka.topic"))
 	defer wgParent.Done()
 	defer partitionConsumer.Close()
 
 	for msg := range partitionConsumer.Messages() {
 		var segment entity.Notification
-		err := easyjson.Unmarshal(msg.Value, &segment)
+		err := json.Unmarshal(msg.Value, &segment)
 		if err != nil {
 			logger.Error(err.Error())
 			continue
 		}
+		fmt.Println("NOTIFICATION RECEIVE")
+		fmt.Println(segment)
 
 		jsonData, err := json.MarshalIndent(segment, "", "    ")
 		if err != nil {

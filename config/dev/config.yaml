@@ -8,14 +8,14 @@ server:
 
 kafka:
   host: kafka
-  port: 6473
+  port: 9092
   topic: emails
 
 mongo:
   host: mongo
   port: 27017
-  user: ivan
-  password: 123
+  conn_name: server
+  conn_pwd: server123
 
 memcached:
   host: memcached

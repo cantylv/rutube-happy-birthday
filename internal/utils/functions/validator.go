@@ -7,7 +7,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/asaskevich/govalidator"
-	valid "github.com/asaskevich/govalidator"
 )
 
 var (
@@ -19,7 +18,7 @@ var (
 // InitValidator
 // Defines specific struct tags for validation.
 func InitValidator() {
-	valid.SetFieldsRequiredByDefault(true)
+	govalidator.SetFieldsRequiredByDefault(true)
 	// Custom validation tags
 	govalidator.TagMap["user_email"] = func(email string) bool {
 		emailLen := utf8.RuneCountInString(email)

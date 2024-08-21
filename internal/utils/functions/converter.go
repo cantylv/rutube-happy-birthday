@@ -43,7 +43,7 @@ func ConverterIdsDB(ids entity.SubProps, employeeData *user.User) (sub.SubProps,
 	return sub.SubProps{
 		IdFollower:       followerId,
 		IdEmployee:       ids.IdEmployee,
-		FullNameEmployee: employeeData.Email,
+		FullNameEmployee: employeeData.FullName,
 		BirthdayEmployee: employeeData.Birthday,
 		EmailEmployee:    employeeData.Email,
 	}, nil

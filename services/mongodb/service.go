@@ -16,8 +16,8 @@ func Init() *mongo.Client {
 	logger := zap.Must(zap.NewProduction()).Sugar()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	connLine := fmt.Sprintf(`mongodb://%s:%s@%s:%d/main?directConnection=true&tls=false&connectTimeoutMS=5000&socketTimeoutMS=10000&maxPoolSize=30&minPoolSize=0&maxConnecting=3`,
-		viper.GetString("mongo.user"), viper.GetString("mongo.password"), viper.GetString("mongo.host"), viper.GetUint16("mongo.port"))
+	connLine := fmt.Sprintf(`mongodb://%s:%d/main?connectTimeoutMS=5000&socketTimeoutMS=10000&maxPoolSize=30&minPoolSize=0&maxConnecting=3`,
+		viper.GetString("mongo.host"), viper.GetUint16("mongo.port"))
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connLine))
 	if err != nil {
 		logger.Panicf("fatal error MongoDB connect: %w", err)
