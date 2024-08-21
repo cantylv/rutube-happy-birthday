@@ -21,7 +21,7 @@ func Init(props SubProps) {
 	usecaseSub := uSub.NewUsecaseLayer(&repoSub, &repoUser)
 	deliverySub := sub.NewDeliveryLayer(&usecaseSub)
 
-	props.Router.HandleFunc("/api/v1/sub/{employee_id}", deliverySub.Sub)
-	props.Router.HandleFunc("/api/v1/sub/{employee_id}/new_interval/{interval}", deliverySub.ChangeSubInterval)
-	props.Router.HandleFunc("/api/v1/unsub/{employee_id}", deliverySub.Unsub)
+	props.Router.HandleFunc("/api/v1/sub/{employee_id}", deliverySub.Sub).Methods("POST")
+	props.Router.HandleFunc("/api/v1/sub/{employee_id}/new_interval/{interval}", deliverySub.ChangeSubInterval).Methods("PUT")
+	props.Router.HandleFunc("/api/v1/unsub/{employee_id}", deliverySub.Unsub).Methods("POST")
 }
